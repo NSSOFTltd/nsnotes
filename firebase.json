@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "public": "public",  // Ensure your files (HTML, CSS, JS) are inside the "public" folder
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      { "source": "**", "destination": "/index.html" }
+    ]
+  }
+}
