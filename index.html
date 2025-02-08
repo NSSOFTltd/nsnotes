@@ -13,8 +13,9 @@
             font-family: Arial, sans-serif;
         }
 
+        /* Background Image */
         body {
-            background: #f4f4f4;
+            background: #1e1e1e;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,22 +24,11 @@
             overflow: hidden;
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 0;
-        }
-
+        /* Login Container */
         .login-container {
             position: relative;
             z-index: 1;
-            background: rgba(30, 30, 30, 0.6);
+            background: rgba(30, 30, 30, 0.6); /* Slight transparency */
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
@@ -56,18 +46,28 @@
             margin-top: 20px;
         }
 
+        /* Home Page Layout */
         #home-page {
             display: none;
             width: 100%;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
+            height: 100%;
+            padding: 0;
+            background: #333;
+            color: white;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #1e1e1e;
+        }
+
+        header h1 {
+            margin: 0;
         }
 
         #search {
-            position: absolute;
-            top: 20px;
-            right: 20px;
             padding: 10px;
             background: #2a2a2a;
             color: white;
@@ -83,12 +83,17 @@
             padding: 20px;
         }
 
-        .note-card {
-            background: #fff;
+        .note {
+            background: #444;
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            color: #333;
+            box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .note p {
+            color: white;
         }
 
         #add-note-btn {
@@ -104,6 +109,49 @@
             font-size: 24px;
             cursor: pointer;
         }
+
+        /* Modal for Adding Note */
+        #add-note-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        #add-note-modal .modal-content {
+            background: #333;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            text-align: center;
+        }
+
+        #add-note-modal input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #2a2a2a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+
+        #add-note-modal button {
+            padding: 10px 15px;
+            background: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 <body>
@@ -117,18 +165,30 @@
 
     <!-- Home Page -->
     <div id="home-page">
-        <header style="display: flex; justify-content: space-between; padding: 15px; background-color: #1e1e1e;">
+        <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title...">
         </header>
 
-        <div class="notes-container" id="notes-container"></div>
+        <div class="notes-container" id="notes-container">
+            <!-- Dynamic notes will appear here -->
+        </div>
 
         <button id="add-note-btn">+</button>
     </div>
 
+    <!-- Add Note Modal -->
+    <div id="add-note-modal">
+        <div class="modal-content">
+            <h2>Add a New Note</h2>
+            <input type="text" id="note-title" placeholder="Note Title">
+            <textarea id="note-content" placeholder="Write your note here..." rows="5"></textarea><br>
+            <button id="save-note">Save Note</button>
+            <button id="close-modal">Close</button>
+        </div>
+    </div>
+
     <script>
-        // Google Login Callback Function
         function handleCredentialResponse(response) {
             try {
                 const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -143,10 +203,9 @@
             }
         }
 
-        // Initialize Google Login Button
         function renderGoogleLoginButton() {
             google.accounts.id.initialize({
-                client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com", // Your Google Client ID
+                client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
                 callback: handleCredentialResponse
             });
 
@@ -156,47 +215,63 @@
             );
         }
 
-        // Function to Add New Note
-        function addNewNote() {
-            const noteContainer = document.getElementById("notes-container");
-
-            const newNote = document.createElement("div");
-            newNote.classList.add("note-card");
-            newNote.innerHTML = `<h3>New Note</h3><p>This is a new note. You can edit it.</p>`;
-
-            noteContainer.appendChild(newNote);
+        function showAddNoteModal() {
+            document.getElementById("add-note-modal").style.display = "flex";
         }
 
-        // Handle Search Functionality
-        function handleSearch() {
-            const searchTerm = document.getElementById("search").value.toLowerCase();
-            const notes = document.querySelectorAll(".note-card");
+        function closeAddNoteModal() {
+            document.getElementById("add-note-modal").style.display = "none";
+        }
+
+        function saveNote() {
+            const title = document.getElementById("note-title").value;
+            const content = document.getElementById("note-content").value;
+            
+            if (title && content) {
+                const note = {
+                    title: title,
+                    content: content
+                };
+
+                let notes = JSON.parse(localStorage.getItem("notes")) || [];
+                notes.push(note);
+                localStorage.setItem("notes", JSON.stringify(notes));
+
+                displayNotes();
+                closeAddNoteModal();
+            } else {
+                alert("Please fill in both title and content!");
+            }
+        }
+
+        function displayNotes() {
+            const notesContainer = document.getElementById("notes-container");
+            notesContainer.innerHTML = "";
+            const notes = JSON.parse(localStorage.getItem("notes")) || [];
+            
             notes.forEach(note => {
-                const noteTitle = note.querySelector("h3").textContent.toLowerCase();
-                if (noteTitle.includes(searchTerm)) {
-                    note.style.display = "block";
-                } else {
-                    note.style.display = "none";
-                }
+                const noteElement = document.createElement("div");
+                noteElement.classList.add("note");
+                noteElement.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
+                notesContainer.appendChild(noteElement);
             });
         }
 
-        // Initialize Home Page and Event Listeners
         window.onload = function () {
             const user = localStorage.getItem("user");
             if (user) {
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
+                displayNotes();
             } else {
                 renderGoogleLoginButton();
             }
-
-            // Add Event Listener for "Add Note" Button
-            document.getElementById("add-note-btn").addEventListener("click", addNewNote);
-
-            // Add Event Listener for Search Input
-            document.getElementById("search").addEventListener("input", handleSearch);
         };
+
+        // Event Listeners
+        document.getElementById("add-note-btn").addEventListener("click", showAddNoteModal);
+        document.getElementById("close-modal").addEventListener("click", closeAddNoteModal);
+        document.getElementById("save-note").addEventListener("click", saveNote);
     </script>
 
 </body>
