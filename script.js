@@ -1,11 +1,12 @@
+// Google Login functionality
 function handleCredentialResponse(response) {
     try {
         const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
         localStorage.setItem("user", JSON.stringify(responsePayload));
 
         // Hide login page and show home page
-        document.getElementById("login-page").classList.add("hidden");
-        document.getElementById("home-page").classList.remove("hidden");
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("home-page").style.display = "block";
     } catch (error) {
         console.error("Login Error:", error);
         alert("Login failed! Please try again.");
@@ -14,7 +15,7 @@ function handleCredentialResponse(response) {
 
 function renderGoogleLoginButton() {
     google.accounts.id.initialize({
-        client_id: "1096498113269-aa66pncvqn6jf7jkb8r0mh7di47dv3m4.apps.googleusercontent.com",
+        client_id: "1096498113269-aa66pncvqn6jf7jkb8r0mh7di47dv3m4.apps.googleusercontent.com", // Use your client ID here
         callback: handleCredentialResponse
     });
 
@@ -24,37 +25,33 @@ function renderGoogleLoginButton() {
     );
 }
 
+// Load Google Login button or home page based on user status
 window.onload = function () {
     const user = localStorage.getItem("user");
     if (user) {
-        document.getElementById("login-page").classList.add("hidden");
-        document.getElementById("home-page").classList.remove("hidden");
+        document.getElementById("login-page").style.display = "none";
+        document.getElementById("home-page").style.display = "block";
     } else {
         renderGoogleLoginButton();
     }
 };
 
-// Logout & Switch Account
-document.getElementById("logout-btn").addEventListener("click", function () {
+// Menu options
+const menuButton = document.getElementById("menu-button");
+const menuOptions = document.getElementById("menu-options");
+
+menuButton.addEventListener("click", () => {
+    menuOptions.style.display = menuOptions.style.display === "block" ? "none" : "block";
+});
+
+// Logout button
+document.getElementById("logout-button").addEventListener("click", () => {
     localStorage.removeItem("user");
-    location.reload();
+    window.location.reload();
 });
 
-// Add Notes Functionality
-document.getElementById("add-note-btn").addEventListener("click", function () {
-    const noteTitle = prompt("Enter note title:");
-    if (noteTitle) {
-        const note = document.createElement("div");
-        note.innerText = noteTitle;
-        note.classList.add("note");
-        document.getElementById("notes-container").appendChild(note);
-    }
-});
-
-// Search Notes
-document.getElementById("search").addEventListener("input", function (e) {
-    const query = e.target.value.toLowerCase();
-    document.querySelectorAll(".note").forEach(note => {
-        note.style.display = note.innerText.toLowerCase().includes(query) ? "block" : "none";
-    });
+// Switch Account functionality
+document.getElementById("switch-account-button").addEventListener("click", () => {
+    google.accounts.id.disableAutoSelect();
+    google.accounts.id.prompt();
 });
