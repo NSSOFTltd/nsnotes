@@ -121,12 +121,22 @@
             cursor: pointer;
         }
 
+        /* Google login button */
+        #google-login {
+            display: none;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Home Page -->
-    <div id="home-page">
+    <!-- Login Page (initial screen) -->
+    <div id="login-page" style="display: none;">
+        <div id="google-login"></div>
+    </div>
+
+    <!-- Home Page (after login) -->
+    <div id="home-page" style="display: none;">
         <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title...">
@@ -146,12 +156,13 @@
     </div>
 
     <script>
-        // Function to handle credential response from Google login
+        // Function to handle the credential response after Google login
         function handleCredentialResponse(response) {
             try {
                 const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
                 localStorage.setItem("user", JSON.stringify(responsePayload));
 
+                // Hide login page and show home page
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
             } catch (error) {
@@ -183,6 +194,13 @@
             });
         }
 
+        // Switch account function
+        function switchAccount() {
+            localStorage.removeItem("user");
+            google.accounts.id.disableAutoSelect(); // Disable auto select to allow account switching
+            window.location.reload(); // Reload page to allow the user to select another account
+        }
+
         // Toggle profile menu dropdown
         document.getElementById("profile-menu").addEventListener("click", function () {
             this.classList.toggle("active");
@@ -190,10 +208,7 @@
 
         // Handle Log out, Switch Account, and Profile button actions
         document.getElementById("logout-btn").addEventListener("click", logout);
-        document.getElementById("switch-account-btn").addEventListener("click", function () {
-            localStorage.removeItem("user");
-            window.location.reload();
-        });
+        document.getElementById("switch-account-btn").addEventListener("click", switchAccount);
         document.getElementById("profile-btn").addEventListener("click", function () {
             alert("Profile button clicked!");
         });
@@ -205,9 +220,15 @@
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
             } else {
-                renderGoogleLoginButton();
+                document.getElementById("login-page").style.display = "block";
+                renderGoogleLoginButton(); // Show Google login button
             }
         };
+
+        // Add Note button functionality
+        document.getElementById("add-note-btn").addEventListener("click", function () {
+            alert("Add Note button clicked!"); // You can add functionality here to create a new note.
+        });
 
     </script>
 
