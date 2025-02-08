@@ -3,325 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES</title>
+    <title>NS NOTES - Google Login</title>
     <style>
         body {
-            background-color: #121212;
-            color: white;
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background-color: #1e1e1e;
-        }
-
-        h1 {
-            margin: 0;
-        }
-
-        #search {
-            background: #2a2a2a;
-            border: none;
-            padding: 10px;
-            color: white;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .notes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .note {
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .note .delete {
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            cursor: pointer;
-            color: #ff6600;
-        }
-
-        #add-note-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #ff6600;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        #note-editor {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            background: black;
-            padding: 20px;
-        }
-
-        #note-title {
-            width: 100%;
-            font-size: 22px;
-            background: black;
-            color: white;
-            border: none;
-            outline: none;
-            padding: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 70vh;
-            background: black;
-            color: white;
-            font-size: 18px;
-            border: none;
-            outline: none;
-            resize: none;
-            padding: 10px;
-        }
-
-        .editor-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .btn {
-            background: #ff6600;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Google Login Button */
-        #google-login-btn {
-            background: #4285F4;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            margin: 50px auto;
+            text-align: center;
+            padding: 50px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Home Page -->
-    <div id="home-page">
-        <header>
-            <h1>NS NOTES</h1>
-            <input type="text" id="search" placeholder="Search notes by title...">
-        </header>
+    <h1>Welcome to NS NOTES</h1>
+    <h3>Sign in with Google to continue</h3>
 
-        <!-- Google Login Button -->
-        <button id="google-login-btn">Login with Google</button>
-
-        <div class="notes-container" id="notes-container">
-            <!-- Notes will be added dynamically -->
-        </div>
-
-        <!-- Floating Add Button -->
-        <button id="add-note-btn">+</button>
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+        data-client_id="YOUR_GOOGLE_CLIENT_ID"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="handleCredentialResponse">
     </div>
 
-    <!-- Note Editor -->
-    <div id="note-editor">
-        <header>
-            <button class="btn" id="back-btn">← Back</button>
-            <button class="btn" id="save-note-btn">Save</button>
-        </header>
+    <div class="g_id_signin" data-type="standard"></div>
 
-        <input type="text" id="note-title" placeholder="Note Title">
-        <textarea id="note-text" placeholder="Write your note here..."></textarea>
-    </div>
+    <p id="user-info"></p>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
-
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC4DsH2v6bhuh8rixt9vXlEJIYjfXZJbmI",
-            authDomain: "ns-notes-8af55.firebaseapp.com",
-            projectId: "ns-notes-8af55",
-            storageBucket: "ns-notes-8af55.firebasestorage.app",
-            messagingSenderId: "797399135887",
-            appId: "1:797399135887:web:d56629144d09ba08cf62fa",
-            measurementId: "G-VNFCBWBB5C"
-        };
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+            // Decode the token to get user details
+            const idToken = response.credential;
+            const payload = JSON.parse(atob(idToken.split(".")[1]));
 
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const addNoteBtn = document.getElementById("add-note-btn");
-        const noteEditor = document.getElementById("note-editor");
-        const homePage = document.getElementById("home-page");
-        const noteTitle = document.getElementById("note-title");
-        const noteText = document.getElementById("note-text");
-        const saveNoteBtn = document.getElementById("save-note-btn");
-        const backBtn = document.getElementById("back-btn");
-        const searchBox = document.getElementById("search");
-
-        let currentNoteId = null;
-        let notes = {};
-
-        // Google Login
-        googleLoginBtn.addEventListener('click', () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    console.log('User logged in:', result.user);
-                    googleLoginBtn.style.display = 'none'; // Hide login button after login
-                    loadNotes();
-                })
-                .catch((error) => {
-                    console.error('Error during login:', error);
-                });
-        });
-
-        // Load notes from Firestore
-        function loadNotes() {
-            if (auth.currentUser) {
-                db.collection("notes")
-                    .where("userId", "==", auth.currentUser.uid)
-                    .get()
-                    .then((querySnapshot) => {
-                        notes = {};
-                        querySnapshot.forEach((doc) => {
-                            notes[doc.id] = doc.data();
-                        });
-                        renderNotes();
-                    });
-            }
-        }
-
-        // Render notes
-        function renderNotes(filter = "") {
-            const notesContainer = document.getElementById("notes-container");
-            notesContainer.innerHTML = "";
-            Object.keys(notes).forEach((id) => {
-                const { title, content } = notes[id];
-                if (title.toLowerCase().includes(filter.toLowerCase())) {
-                    const noteElement = document.createElement("div");
-                    noteElement.classList.add("note");
-                    noteElement.innerHTML = `
-                        <h3>${title}</h3>
-                        <p>${content.slice(0, 100)}...</p>
-                        <span class="delete">✖</span>
-                    `;
-
-                    noteElement.addEventListener("click", () => openNote(id));
-                    noteElement.querySelector(".delete").addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        deleteNote(id);
-                    });
-
-                    notesContainer.appendChild(noteElement);
-                }
-            });
-        }
-
-        function openNote(id) {
-            currentNoteId = id;
-            noteTitle.value = notes[id].title || "";
-            noteText.value = notes[id].content || "";
-            noteEditor.style.display = "flex";
-            homePage.style.display = "none";
-        }
-
-        function addNote() {
-            currentNoteId = new Date().getTime().toString();
-            noteTitle.value = "";
-            noteText.value = "";
-            noteEditor.style.display = "flex";
-            homePage.style.display = "none";
-        }
-
-        function saveNote() {
-            const title = noteTitle.value.trim();
-            const content = noteText.value.trim();
-            if (title && content) {
-                const noteData = {
-                    title: title,
-                    content: content,
-                    userId: auth.currentUser.uid
-                };
-
-                if (currentNoteId) {
-                    db.collection("notes").doc(currentNoteId).set(noteData)
-                        .then(() => {
-                            loadNotes();
-                            goBack();
-                        });
-                } else {
-                    db.collection("notes").add(noteData)
-                        .then(() => {
-                            loadNotes();
-                            goBack();
-                        });
-                }
-            } else {
-                alert("Please fill out both the title and the content!");
-            }
-        }
-
-        function deleteNote(id) {
-            if (confirm("Are you sure you want to delete this note?")) {
-                db.collection("notes").doc(id).delete()
-                    .then(() => {
-                        loadNotes();
-                    });
-            }
-        }
-
-        function goBack() {
-            noteEditor.style.display = "none";
-            homePage.style.display = "block";
-            renderNotes();
-        }
-
-        searchBox.addEventListener("input", () => {
-            renderNotes(searchBox.value);
-        });
-
-        addNoteBtn.addEventListener("click", addNote);
-        saveNoteBtn.addEventListener("click", saveNote);
-        backBtn.addEventListener("click", goBack);
-
-        // If already logged in, load notes
-        if (auth.currentUser) {
-            googleLoginBtn.style.display = 'none';
-            loadNotes();
+            document.getElementById("user-info").innerHTML = `
+                <h3>Welcome, ${payload.name}</h3>
+                <p>Email: ${payload.email}</p>
+                <img src="${payload.picture}" alt="Profile Picture" width="100">
+            `;
         }
     </script>
 
