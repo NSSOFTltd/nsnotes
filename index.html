@@ -95,15 +95,21 @@
         }
 
         function renderGoogleLoginButton() {
-            google.accounts.id.initialize({
-                client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
-                callback: handleCredentialResponse
-            });
+            if (google.accounts && google.accounts.id) {
+                console.log("Initializing Google Login...");
+                google.accounts.id.initialize({
+                    client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
 
-            google.accounts.id.renderButton(
-                document.getElementById("google-login"),
-                { theme: "outline", size: "large" }
-            );
+                console.log("Rendering Google Login Button...");
+                google.accounts.id.renderButton(
+                    document.getElementById("google-login"),
+                    { theme: "outline", size: "large" }
+                );
+            } else {
+                console.error("Google Accounts API not loaded correctly.");
+            }
         }
 
         window.onload = function () {
@@ -112,7 +118,12 @@
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
             } else {
-                renderGoogleLoginButton();
+                // Wait until the Google API script is loaded before rendering the button
+                if (window.google && google.accounts && google.accounts.id) {
+                    renderGoogleLoginButton();
+                } else {
+                    console.error("Google API not loaded.");
+                }
             }
         };
     </script>
