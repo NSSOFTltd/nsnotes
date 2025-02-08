@@ -1,0 +1,108 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #181818;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Login Page */
+.login-container {
+    background: #222;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.google-login-btn {
+    margin-top: 20px;
+}
+
+/* Home Page */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e1e;
+    padding: 15px;
+}
+
+#search {
+    padding: 10px;
+    background: #2a2a2a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+}
+
+/* Notes Container */
+#notes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+#add-note-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Three-Dot Menu */
+.menu {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #333;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.menu-content button {
+    display: block;
+    background: none;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.menu-content button:hover {
+    background: #444;
+}
+
+.menu:hover .menu-content {
+    display: block;
+}
