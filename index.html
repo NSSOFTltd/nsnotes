@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES - Login</title>
+    <title>NS NOTES - Home</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * {
@@ -13,9 +13,9 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Body and Background */
+        /* Body and background styling */
         body {
-            background: #1e1e1e;
+            background-color: #2a2a2a;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,78 +24,89 @@
             overflow: hidden;
         }
 
-        /* Login Container */
-        .login-container {
-            position: relative;
-            z-index: 1;
-            background: rgba(30, 30, 30, 0.6);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
-            text-align: center;
-            color: white;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .google-login-btn {
-            margin-top: 20px;
-        }
-
-        /* Home Page Layout */
+        /* Home page layout */
         #home-page {
-            display: none;
             width: 100%;
-            height: 100%;
-            padding: 0;
-            background: #333;
-            color: white;
+            max-width: 1200px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
         }
 
+        /* Header styling */
         header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 15px;
-            background-color: #1e1e1e;
+            background-color: #333;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        header h1 {
-            margin: 0;
+        h1 {
+            color: white;
+            font-size: 24px;
         }
 
+        /* Search bar styling */
         #search {
             padding: 10px;
-            background: #2a2a2a;
+            background: #444;
             color: white;
             border: none;
             border-radius: 8px;
             outline: none;
         }
 
+        /* 3-dot menu button */
+        #profile-menu {
+            position: relative;
+            cursor: pointer;
+        }
+
+        #menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background-color: #333;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            min-width: 150px;
+        }
+
+        #menu-dropdown a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            border-bottom: 1px solid #444;
+        }
+
+        #menu-dropdown a:hover {
+            background-color: #444;
+        }
+
+        #menu-dropdown a:last-child {
+            border-bottom: none;
+        }
+
+        /* Show dropdown when active */
+        #profile-menu.active #menu-dropdown {
+            display: block;
+        }
+
+        /* Notes container layout */
         .notes-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-            padding: 20px;
+            padding: 20px 0;
         }
 
-        .note {
-            background: #444;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 0 5px rgba(255, 102, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .note p {
-            color: white;
-        }
-
+        /* Add note button */
         #add-note-btn {
             position: fixed;
             bottom: 20px;
@@ -110,92 +121,37 @@
             cursor: pointer;
         }
 
-        /* Modal for Adding Note */
-        #add-note-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        #add-note-modal .modal-content {
-            background: #333;
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 400px;
-            text-align: center;
-        }
-
-        #add-note-modal input,
-        #add-note-modal textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            background: #2a2a2a;
-            color: white;
-            border: none;
-            border-radius: 8px;
-        }
-
-        #add-note-modal button {
-            padding: 10px 15px;
-            background: #ff6600;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
     </style>
 </head>
 <body>
-
-    <!-- Login Page -->
-    <div id="login-page" class="login-container">
-        <h1>Welcome to NS NOTES</h1>
-        <p>Login to continue</p>
-        <div id="google-login" class="google-login-btn"></div>
-    </div>
 
     <!-- Home Page -->
     <div id="home-page">
         <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title...">
+            <div id="profile-menu">
+                <span>...</span>
+                <div id="menu-dropdown">
+                    <a href="#" id="profile-btn">Profile</a>
+                    <a href="#" id="switch-account-btn">Switch Account</a>
+                    <a href="#" id="logout-btn">Log Out</a>
+                </div>
+            </div>
         </header>
 
-        <div class="notes-container" id="notes-container">
-            <!-- Dynamic notes will appear here -->
-        </div>
+        <div class="notes-container" id="notes-container"></div>
 
         <button id="add-note-btn">+</button>
     </div>
 
-    <!-- Add Note Modal -->
-    <div id="add-note-modal">
-        <div class="modal-content">
-            <h2>Add a New Note</h2>
-            <input type="text" id="note-title" placeholder="Note Title">
-            <textarea id="note-content" placeholder="Write your note here..." rows="5"></textarea><br>
-            <button id="save-note">Save Note</button>
-            <button id="close-modal">Close</button>
-        </div>
-    </div>
-
     <script>
+        // Function to handle credential response from Google login
         function handleCredentialResponse(response) {
             try {
                 const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
                 localStorage.setItem("user", JSON.stringify(responsePayload));
 
-                // Hide login page and show home page
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
             } catch (error) {
@@ -204,6 +160,7 @@
             }
         }
 
+        // Render Google login button
         function renderGoogleLoginButton() {
             google.accounts.id.initialize({
                 client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
@@ -216,63 +173,42 @@
             );
         }
 
-        function showAddNoteModal() {
-            document.getElementById("add-note-modal").style.display = "flex";
-        }
-
-        function closeAddNoteModal() {
-            document.getElementById("add-note-modal").style.display = "none";
-        }
-
-        function saveNote() {
-            const title = document.getElementById("note-title").value;
-            const content = document.getElementById("note-content").value;
-            
-            if (title && content) {
-                const note = {
-                    title: title,
-                    content: content
-                };
-
-                let notes = JSON.parse(localStorage.getItem("notes")) || [];
-                notes.push(note);
-                localStorage.setItem("notes", JSON.stringify(notes));
-
-                displayNotes();
-                closeAddNoteModal();
-            } else {
-                alert("Please fill in both title and content!");
-            }
-        }
-
-        function displayNotes() {
-            const notesContainer = document.getElementById("notes-container");
-            notesContainer.innerHTML = "";
-            const notes = JSON.parse(localStorage.getItem("notes")) || [];
-            
-            notes.forEach(note => {
-                const noteElement = document.createElement("div");
-                noteElement.classList.add("note");
-                noteElement.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
-                notesContainer.appendChild(noteElement);
+        // Logout function
+        function logout() {
+            localStorage.removeItem("user");
+            document.getElementById("home-page").style.display = "none";
+            document.getElementById("login-page").style.display = "block";
+            google.accounts.id.revoke(localStorage.getItem("user"), () => {
+                console.log("User logged out");
             });
         }
 
+        // Toggle profile menu dropdown
+        document.getElementById("profile-menu").addEventListener("click", function () {
+            this.classList.toggle("active");
+        });
+
+        // Handle Log out, Switch Account, and Profile button actions
+        document.getElementById("logout-btn").addEventListener("click", logout);
+        document.getElementById("switch-account-btn").addEventListener("click", function () {
+            localStorage.removeItem("user");
+            window.location.reload();
+        });
+        document.getElementById("profile-btn").addEventListener("click", function () {
+            alert("Profile button clicked!");
+        });
+
+        // On page load, check if user is logged in
         window.onload = function () {
             const user = localStorage.getItem("user");
             if (user) {
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
-                displayNotes();
             } else {
                 renderGoogleLoginButton();
             }
         };
 
-        // Event Listeners
-        document.getElementById("add-note-btn").addEventListener("click", showAddNoteModal);
-        document.getElementById("close-modal").addEventListener("click", closeAddNoteModal);
-        document.getElementById("save-note").addEventListener("click", saveNote);
     </script>
 
 </body>
