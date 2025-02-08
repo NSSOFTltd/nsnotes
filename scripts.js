@@ -16,7 +16,7 @@ function handleCredentialResponse(response) {
 
 function renderGoogleLoginButton() {
     google.accounts.id.initialize({
-        client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
+        client_id: "YOUR_NEW_GOOGLE_CLIENT_ID",
         callback: handleCredentialResponse
     });
 
@@ -26,6 +26,7 @@ function renderGoogleLoginButton() {
     );
 }
 
+// Load Notes
 function loadNotes() {
     let notesContainer = document.getElementById("notes-container");
     notesContainer.innerHTML = "";
@@ -34,11 +35,12 @@ function loadNotes() {
     notes.forEach((note) => {
         let noteDiv = document.createElement("div");
         noteDiv.classList.add("note");
-        noteDiv.innerHTML = `<div class="note-title">${note.title}</div>`;
+        noteDiv.innerText = note.title;
         notesContainer.appendChild(noteDiv);
     });
 }
 
+// Add Note
 function addNote() {
     let title = prompt("Enter note title:");
     if (!title) return;
@@ -48,6 +50,23 @@ function addNote() {
     localStorage.setItem("notes", JSON.stringify(notes));
     loadNotes();
 }
+
+// 3-Dot Menu Toggle
+document.querySelector(".menu-btn").addEventListener("click", () => {
+    document.querySelector(".dropdown-menu").style.display = "block";
+});
+
+document.addEventListener("click", (event) => {
+    if (!event.target.closest(".menu-container")) {
+        document.querySelector(".dropdown-menu").style.display = "none";
+    }
+});
+
+// Logout
+document.getElementById("logout-btn").addEventListener("click", () => {
+    localStorage.removeItem("user");
+    location.reload();
+});
 
 window.onload = function () {
     const user = localStorage.getItem("user");
