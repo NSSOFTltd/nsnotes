@@ -101,6 +101,41 @@
             cursor: pointer;
         }
 
+        /* Three Dot Menu (Profile, Logout, Switch Account) */
+        .menu-btn {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .menu-btn:after {
+            content: '...';
+            font-size: 30px;
+            color: white;
+        }
+
+        .menu-options {
+            display: none;
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        .menu-btn:hover .menu-options {
+            display: block;
+        }
+
+        .menu-options div {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .menu-options div:hover {
+            background-color: #444;
+        }
     </style>
 </head>
 <body>
@@ -116,7 +151,17 @@
     <div id="home-page">
         <div class="navbar">
             <h1>NS NOTES</h1>
-            <input type="text" id="search" class="search-bar" placeholder="Search notes by title...">
+            <div class="search-bar-container">
+                <input type="text" id="search" class="search-bar" placeholder="Search notes by title...">
+            </div>
+            <!-- Three Dot Menu -->
+            <div class="menu-btn">
+                <div class="menu-options">
+                    <div id="profile-option">Profile</div>
+                    <div id="logout-option">Logout</div>
+                    <div id="switch-account-option">Switch Account</div>
+                </div>
+            </div>
         </div>
 
         <div class="notes-container" id="notes-container"></div>
@@ -159,6 +204,24 @@
             } else {
                 renderGoogleLoginButton();
             }
+
+            // Logout functionality
+            document.getElementById('logout-option').addEventListener('click', function () {
+                localStorage.removeItem('user');
+                location.reload();
+            });
+
+            // Switch Account functionality
+            document.getElementById('switch-account-option').addEventListener('click', function () {
+                google.accounts.id.disableAutoSelect();
+                renderGoogleLoginButton();
+            });
+
+            // Profile functionality
+            document.getElementById('profile-option').addEventListener('click', function () {
+                const user = JSON.parse(localStorage.getItem('user'));
+                alert(`Logged in as: ${user.name}`);
+            });
         };
     </script>
 
