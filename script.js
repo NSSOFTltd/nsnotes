@@ -1,13 +1,14 @@
 function handleCredentialResponse(response) {
     try {
-        const user = JSON.parse(atob(response.credential.split('.')[1]));
-        localStorage.setItem("user", JSON.stringify(user));
+        const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
+        localStorage.setItem("user", JSON.stringify(responsePayload));
 
-        // Show home page
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("home-page").style.display = "block";
+        // Hide login page and show home page
+        document.getElementById("login-page").classList.add("hidden");
+        document.getElementById("home-page").classList.remove("hidden");
 
-        loadNotes();
+        // Display user profile
+        document.getElementById("profile-btn").innerText = responsePayload.name;
     } catch (error) {
         console.error("Login Error:", error);
         alert("Login failed! Please try again.");
@@ -16,7 +17,7 @@ function handleCredentialResponse(response) {
 
 function renderGoogleLoginButton() {
     google.accounts.id.initialize({
-        client_id: "YOUR_NEW_GOOGLE_CLIENT_ID",
+        client_id: "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",  // Updated Client ID
         callback: handleCredentialResponse
     });
 
@@ -26,57 +27,42 @@ function renderGoogleLoginButton() {
     );
 }
 
-// Load Notes
-function loadNotes() {
-    let notesContainer = document.getElementById("notes-container");
-    notesContainer.innerHTML = "";
-
-    let notes = JSON.parse(localStorage.getItem("notes")) || [];
-    notes.forEach((note) => {
-        let noteDiv = document.createElement("div");
-        noteDiv.classList.add("note");
-        noteDiv.innerText = note.title;
-        notesContainer.appendChild(noteDiv);
-    });
-}
-
-// Add Note
-function addNote() {
-    let title = prompt("Enter note title:");
-    if (!title) return;
-
-    let notes = JSON.parse(localStorage.getItem("notes")) || [];
-    notes.push({ title });
-    localStorage.setItem("notes", JSON.stringify(notes));
-    loadNotes();
-}
-
-// 3-Dot Menu Toggle
-document.querySelector(".menu-btn").addEventListener("click", () => {
-    document.querySelector(".dropdown-menu").style.display = "block";
-});
-
-document.addEventListener("click", (event) => {
-    if (!event.target.closest(".menu-container")) {
-        document.querySelector(".dropdown-menu").style.display = "none";
+window.onload = function () {
+    const user = localStorage.getItem("user");
+    if (user) {
+        document.getElementById("login-page").classList.add("hidden");
+        document.getElementById("home-page").classList.remove("hidden");
+    } else {
+        renderGoogleLoginButton();
     }
-});
+};
 
-// Logout
+// Logout Function
 document.getElementById("logout-btn").addEventListener("click", () => {
     localStorage.removeItem("user");
     location.reload();
 });
 
-window.onload = function () {
-    const user = localStorage.getItem("user");
-    if (user) {
-        document.getElementById("login-page").style.display = "none";
-        document.getElementById("home-page").style.display = "block";
-        loadNotes();
-    } else {
-        renderGoogleLoginButton();
-    }
+// Switch Account
+document.getElementById("switch-account-btn").addEventListener("click", () => {
+    google.accounts.id.prompt();
+});
 
-    document.getElementById("add-note-btn").addEventListener("click", addNote);
-};
+// Add Note
+document.getElementById("add-note-btn").addEventListener("click", () => {
+    const noteTitle = prompt("Enter note title:");
+    if (noteTitle) {
+        const note = document.createElement("div");
+        note.textContent = noteTitle;
+        note.classList.add("note");
+        document.getElementById("notes-container").appendChild(note);
+    }
+});
+
+// Search Notes
+document.getElementById("search").addEventListener("input", function () {
+    const searchTerm = this.value.toLowerCase();
+    document.querySelectorAll(".note").forEach(note => {
+        note.style.display = note.textContent.toLowerCase().includes(searchTerm) ? "block" : "none";
+    });
+});
