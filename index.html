@@ -83,6 +83,7 @@
             position: relative;
             cursor: pointer;
             color: white;
+            font-size: 24px;
         }
 
         #profile-popup {
@@ -123,6 +124,33 @@
             font-size: 30px;
             cursor: pointer;
         }
+
+        /* Three-Dot Menu Styles */
+        #menu-options {
+            display: none;
+            background-color: #2a2a2a;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #menu-options button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        #menu-options button:hover {
+            background-color: #444;
+        }
+
     </style>
 </head>
 <body>
@@ -139,8 +167,14 @@
         <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes...">
-            <div id="three-dot-menu" onclick="toggleProfilePopup()">&#x22EE;</div>
+            <div id="three-dot-menu" onclick="toggleMenu()">&#x22EE;</div>
         </header>
+
+        <div id="menu-options">
+            <button onclick="showProfile()">Profile</button>
+            <button onclick="switchAccount()">Switch Account</button>
+            <button onclick="logout()">Logout</button>
+        </div>
 
         <div id="profile-popup">
             <h2 id="user-name">User Name</h2>
@@ -185,9 +219,30 @@
         }
 
         // Show or hide profile popup
-        function toggleProfilePopup() {
+        function showProfile() {
             const popup = document.getElementById("profile-popup");
             popup.style.display = popup.style.display === "block" ? "none" : "block";
+        }
+
+        // Toggle the three-dot menu visibility
+        function toggleMenu() {
+            const menu = document.getElementById("menu-options");
+            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        }
+
+        // Logout the user and return to login page
+        function logout() {
+            localStorage.removeItem("user");
+            google.accounts.id.revoke(userProfile.sub, () => {
+                document.getElementById("login-page").style.display = "block";
+                document.getElementById("home-page").style.display = "none";
+                userProfile = null;
+            });
+        }
+
+        // Switch account
+        function switchAccount() {
+            google.accounts.id.prompt();
         }
 
         // Load the page and check if the user is logged in
