@@ -26,37 +26,6 @@ function renderGoogleLoginButton() {
     );
 }
 
-function toggleMenu() {
-    let menu = document.getElementById("menu-content");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-document.addEventListener("click", function (event) {
-    let menu = document.getElementById("menu-content");
-    if (!event.target.closest(".menu-container")) {
-        menu.style.display = "none";
-    }
-});
-
-document.getElementById("logout-btn").addEventListener("click", function () {
-    localStorage.removeItem("user");
-    location.reload();
-});
-
-document.getElementById("switch-account-btn").addEventListener("click", function () {
-    google.accounts.id.prompt();
-});
-
-function addNote() {
-    let title = prompt("Enter note title:");
-    if (!title) return;
-
-    let notes = JSON.parse(localStorage.getItem("notes")) || [];
-    notes.push({ title });
-    localStorage.setItem("notes", JSON.stringify(notes));
-    loadNotes();
-}
-
 function loadNotes() {
     let notesContainer = document.getElementById("notes-container");
     notesContainer.innerHTML = "";
@@ -70,14 +39,14 @@ function loadNotes() {
     });
 }
 
-function searchNotes() {
-    let query = document.getElementById("search").value.toLowerCase();
-    let notes = document.querySelectorAll(".note");
+function addNote() {
+    let title = prompt("Enter note title:");
+    if (!title) return;
 
-    notes.forEach(note => {
-        let title = note.querySelector(".note-title").textContent.toLowerCase();
-        note.style.display = title.includes(query) ? "block" : "none";
-    });
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.push({ title });
+    localStorage.setItem("notes", JSON.stringify(notes));
+    loadNotes();
 }
 
 window.onload = function () {
@@ -89,6 +58,6 @@ window.onload = function () {
     } else {
         renderGoogleLoginButton();
     }
+
+    document.getElementById("add-note-btn").addEventListener("click", addNote);
 };
-
-
