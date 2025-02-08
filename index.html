@@ -3,40 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES - Login</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>NS NOTES - Home</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-    <!-- Login Page -->
-    <div id="login-page" class="login-container">
-        <h1>Welcome to NS NOTES</h1>
-        <p>Login to continue</p>
-        <div id="google-login" class="google-login-btn"></div>
-    </div>
-
     <!-- Home Page -->
-    <div id="home-page" class="hidden">
+    <div id="home-page">
+        <!-- Header -->
         <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title...">
-            <div class="menu">
-                <button id="menu-btn">⋮</button>
-                <div class="menu-content">
-                    <button id="profile-btn">Profile</button>
-                    <button id="switch-account-btn">Switch Account</button>
-                    <button id="logout-btn">Logout</button>
+            <div id="three-dot-menu">
+                &#x22EE; <!-- Ellipsis (3 dots) symbol -->
+                <div id="menu-options" style="display: none; position: absolute; top: 30px; right: 0; background: #333; color: white; padding: 10px; border-radius: 5px;">
+                    <p>Profile</p>
+                    <p>Switch Account</p>
+                    <p onclick="logout()">Logout</p>
                 </div>
             </div>
         </header>
 
-        <div id="notes-container"></div>
+        <!-- Notes Container -->
+        <div class="notes-container" id="notes-container"></div>
 
+        <!-- Add Note Button -->
         <button id="add-note-btn">+</button>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        function logout() {
+            // Logout logic here (clear local storage, etc.)
+            localStorage.removeItem("user");
+            alert("Logged out!");
+            window.location.reload();
+        }
+
+        // Toggle menu for 3-dot button
+        document.getElementById("three-dot-menu").addEventListener("click", function() {
+            const menu = document.getElementById("menu-options");
+            menu.style.display = menu.style.display === "none" || menu.style.display === "" ? "block" : "none";
+        });
+
+        // Add note button logic (basic example)
+        document.getElementById("add-note-btn").addEventListener("click", function() {
+            alert("Add a new note!");
+        });
+
+        // Sample notes data for testing
+        const notes = [
+            { title: "Sample Note 1", content: "This is a test note." },
+            { title: "Sample Note 2", content: "This is another test note." }
+        ];
+
+        const notesContainer = document.getElementById("notes-container");
+        notes.forEach(note => {
+            const noteElement = document.createElement("div");
+            noteElement.innerHTML = `<div style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <h3>${note.title}</h3>
+                                        <p>${note.content}</p>
+                                      </div>`;
+            notesContainer.appendChild(noteElement);
+        });
+    </script>
 
 </body>
 </html>
