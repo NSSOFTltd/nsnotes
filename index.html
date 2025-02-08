@@ -13,24 +13,37 @@
             font-family: Arial, sans-serif;
         }
 
-        /* Body with dark background */
         body {
+            background: #f4f4f4;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: #1e1e1e; /* Dark background */
+            position: relative;
             overflow: hidden;
-            color: white;
         }
 
-        /* Centered Login Box */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
         .login-container {
-            background: rgba(30, 30, 30, 0.8);
+            position: relative;
+            z-index: 1;
+            background: rgba(30, 30, 30, 0.6);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
             text-align: center;
+            color: white;
             width: 90%;
             max-width: 400px;
         }
@@ -41,16 +54,20 @@
 
         .google-login-btn {
             margin-top: 20px;
-            z-index: 10;
         }
 
         #home-page {
             display: none;
             width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        /* Home Page Styling */
         #search {
+            position: absolute;
+            top: 20px;
+            right: 20px;
             padding: 10px;
             background: #2a2a2a;
             color: white;
@@ -66,12 +83,26 @@
             padding: 20px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            .login-container {
-                width: 80%;
-                padding: 20px;
-            }
+        .note-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        #add-note-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -91,14 +122,13 @@
             <input type="text" id="search" placeholder="Search notes by title...">
         </header>
 
-        <div class="notes-container" id="notes-container">
-            <!-- Notes content will be populated here -->
-        </div>
+        <div class="notes-container" id="notes-container"></div>
 
-        <button id="add-note-btn" style="position: fixed; bottom: 20px; right: 20px; background: #ff6600; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer;">+</button>
+        <button id="add-note-btn">+</button>
     </div>
 
     <script>
+        // Google Login Callback Function
         function handleCredentialResponse(response) {
             try {
                 const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -113,9 +143,10 @@
             }
         }
 
+        // Initialize Google Login Button
         function renderGoogleLoginButton() {
             google.accounts.id.initialize({
-                client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com",
+                client_id: "1096498113269-95bg5dk0od0orqtjnhu2bvm02o7ude8q.apps.googleusercontent.com", // Your Google Client ID
                 callback: handleCredentialResponse
             });
 
@@ -125,22 +156,47 @@
             );
         }
 
+        // Function to Add New Note
+        function addNewNote() {
+            const noteContainer = document.getElementById("notes-container");
+
+            const newNote = document.createElement("div");
+            newNote.classList.add("note-card");
+            newNote.innerHTML = `<h3>New Note</h3><p>This is a new note. You can edit it.</p>`;
+
+            noteContainer.appendChild(newNote);
+        }
+
+        // Handle Search Functionality
+        function handleSearch() {
+            const searchTerm = document.getElementById("search").value.toLowerCase();
+            const notes = document.querySelectorAll(".note-card");
+            notes.forEach(note => {
+                const noteTitle = note.querySelector("h3").textContent.toLowerCase();
+                if (noteTitle.includes(searchTerm)) {
+                    note.style.display = "block";
+                } else {
+                    note.style.display = "none";
+                }
+            });
+        }
+
+        // Initialize Home Page and Event Listeners
         window.onload = function () {
             const user = localStorage.getItem("user");
             if (user) {
-                // If user is logged in, show the home page
                 document.getElementById("login-page").style.display = "none";
                 document.getElementById("home-page").style.display = "block";
             } else {
-                // If no user, render Google login button
                 renderGoogleLoginButton();
             }
-        };
 
-        // Add functionality to add a note
-        document.getElementById("add-note-btn").addEventListener("click", function () {
-            alert("Add new note functionality not implemented yet.");
-        });
+            // Add Event Listener for "Add Note" Button
+            document.getElementById("add-note-btn").addEventListener("click", addNewNote);
+
+            // Add Event Listener for Search Input
+            document.getElementById("search").addEventListener("input", handleSearch);
+        };
     </script>
 
 </body>
