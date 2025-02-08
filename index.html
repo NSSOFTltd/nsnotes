@@ -3,139 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES</title>
+    <title>NS NOTES - Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        /* General Styles */
-        body {
-            background-color: #121212;
-            color: white;
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
-        /* Header */
-        header {
+        body {
+            background: url('https://source.unsplash.com/random/1920x1080?dark,nature') no-repeat center center/cover;
+            height: 100vh;
             display: flex;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background-color: #1e1e1e;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: rgba(30, 30, 30, 0.4); /* Transparent dark blur effect */
+            backdrop-filter: blur(10px); /* Blur background */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+            text-align: center;
+            color: white;
+            width: 90%;
+            max-width: 400px;
         }
 
         h1 {
-            margin: 0;
+            margin-bottom: 20px;
         }
 
-        #search {
-            background: #2a2a2a;
-            border: none;
-            padding: 10px;
-            color: white;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        /* Notes Container */
-        .notes-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            padding: 20px;
-        }
-
-        /* Note Card */
-        .note {
-            background: #1e1e1e;
-            padding: 15px;
-            border-radius: 12px;
-            position: relative;
-            cursor: pointer;
-        }
-
-        .note .delete {
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            cursor: pointer;
-            color: #ff6600;
-        }
-
-        /* Floating Add Button */
-        #add-note-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #ff6600;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        /* Note Writing View */
-        #note-editor {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            background: black;
-            padding: 20px;
-        }
-
-        #note-title {
-            width: 100%;
-            font-size: 22px;
-            background: black;
-            color: white;
-            border: none;
-            outline: none;
-            padding: 10px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 70vh;
-            background: black;
-            color: white;
-            font-size: 18px;
-            border: none;
-            outline: none;
-            resize: none;
-            padding: 10px;
-        }
-
-        .editor-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .btn {
-            background: #ff6600;
-            color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Google Login */
-        #google-login {
-            display: flex;
-            justify-content: center;
+        .google-login-btn {
             margin-top: 20px;
         }
 
+        #home-page {
+            display: none;
+        }
+
     </style>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <h1>Welcome to NS NOTES</h1>
+        <p>Login to continue</p>
+        <div id="google-login" class="google-login-btn"></div>
+    </div>
+
+    <!-- Home Page -->
+    <div id="home-page">
+        <header style="display: flex; justify-content: space-between; padding: 15px; background-color: #1e1e1e;">
+            <h1>NS NOTES</h1>
+            <input type="text" id="search" placeholder="Search notes by title..." style="padding: 10px; background: #2a2a2a; color: white; border: none; border-radius: 8px; outline: none;">
+        </header>
+
+        <div class="notes-container" id="notes-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; padding: 20px;"></div>
+
+        <button id="add-note-btn" style="position: fixed; bottom: 20px; right: 20px; background: #ff6600; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; cursor: pointer;">+</button>
+    </div>
+
     <script>
         function handleCredentialResponse(response) {
             const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
             alert("Logged in as: " + responsePayload.name);
             localStorage.setItem("user", JSON.stringify(responsePayload));
-            window.location.href = "https://nssoftltd.github.io/NSNOTES/"; // Redirect after login
+
+            document.getElementById("login-page").style.display = "none";
+            document.getElementById("home-page").style.display = "block";
         }
 
         function renderGoogleLoginButton() {
@@ -149,127 +89,16 @@
                 { theme: "outline", size: "large" }
             );
         }
-        window.onload = renderGoogleLoginButton;
-    </script>
-</head>
-<body>
 
-    <div id="google-login"></div>
-
-    <!-- Home Page -->
-    <div id="home-page">
-        <header>
-            <h1>NS NOTES</h1>
-            <input type="text" id="search" placeholder="Search notes by title...">
-        </header>
-
-        <div class="notes-container" id="notes-container">
-            <!-- Notes will be added dynamically -->
-        </div>
-
-        <!-- Floating Add Button -->
-        <button id="add-note-btn">+</button>
-    </div>
-
-    <!-- Note Editor -->
-    <div id="note-editor">
-        <header>
-            <button class="btn" id="back-btn">← Back</button>
-            <button class="btn" id="save-note-btn">Save</button>
-        </header>
-
-        <input type="text" id="note-title" placeholder="Note Title">
-        <textarea id="note-text" placeholder="Write your note here..."></textarea>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const notesContainer = document.getElementById("notes-container");
-            const addNoteBtn = document.getElementById("add-note-btn");
-            const noteEditor = document.getElementById("note-editor");
-            const homePage = document.getElementById("home-page");
-            const noteTitle = document.getElementById("note-title");
-            const noteText = document.getElementById("note-text");
-            const saveNoteBtn = document.getElementById("save-note-btn");
-            const backBtn = document.getElementById("back-btn");
-            const searchBox = document.getElementById("search");
-
-            let currentNoteId = null;
-            let notes = JSON.parse(localStorage.getItem("notes")) || {};
-
-            function renderNotes(filter = "") {
-                notesContainer.innerHTML = "";
-                Object.keys(notes).forEach((id) => {
-                    const { title, content } = notes[id];
-                    if (title.toLowerCase().includes(filter.toLowerCase())) {
-                        const noteElement = document.createElement("div");
-                        noteElement.classList.add("note");
-                        noteElement.innerHTML = `
-                            <h3>${title}</h3>
-                            <p>${content.slice(0, 100)}...</p>
-                            <span class="delete">✖</span>
-                        `;
-
-                        noteElement.addEventListener("click", () => openNote(id));
-                        noteElement.querySelector(".delete").addEventListener("click", (e) => {
-                            e.stopPropagation();
-                            deleteNote(id);
-                        });
-
-                        notesContainer.appendChild(noteElement);
-                    }
-                });
+        window.onload = function () {
+            const user = localStorage.getItem("user");
+            if (user) {
+                document.getElementById("login-page").style.display = "none";
+                document.getElementById("home-page").style.display = "block";
+            } else {
+                renderGoogleLoginButton();
             }
-
-            function openNote(id) {
-                currentNoteId = id;
-                noteTitle.value = notes[id].title || "";
-                noteText.value = notes[id].content || "";
-                noteEditor.style.display = "flex";
-                homePage.style.display = "none";
-            }
-
-            function addNote() {
-                currentNoteId = new Date().getTime().toString();
-                noteTitle.value = "";
-                noteText.value = "";
-                noteEditor.style.display = "flex";
-                homePage.style.display = "none";
-            }
-
-            function saveNote() {
-                const title = noteTitle.value.trim();
-                const content = noteText.value.trim();
-                
-                if (title && content) {
-                    notes[currentNoteId] = { title, content };
-                    localStorage.setItem("notes", JSON.stringify(notes));
-                    goBack();
-                } else {
-                    alert("Please fill out both the title and the content!");
-                }
-            }
-
-            function deleteNote(id) {
-                if (confirm("Are you sure you want to delete this note?")) {
-                    delete notes[id];
-                    localStorage.setItem("notes", JSON.stringify(notes));
-                    renderNotes();
-                }
-            }
-
-            function goBack() {
-                noteEditor.style.display = "none";
-                homePage.style.display = "block";
-                renderNotes();
-            }
-
-            searchBox.addEventListener("input", () => renderNotes(searchBox.value));
-            addNoteBtn.addEventListener("click", addNote);
-            saveNoteBtn.addEventListener("click", saveNote);
-            backBtn.addEventListener("click", goBack);
-            renderNotes();
-        });
+        };
     </script>
 
 </body>
