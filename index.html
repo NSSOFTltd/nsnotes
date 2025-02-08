@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES - Login</title>
+    <title>NS Notes - Login</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -17,25 +17,25 @@
     </div>
 
     <!-- Home Page -->
-    <div id="home-page" style="display: none;">
+    <div id="home-page" class="hidden">
         <header>
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title...">
             <div class="menu-container">
-                <button class="menu-btn">⋮</button>
-                <div class="dropdown-menu">
+                <button id="menu-btn">⋮</button>
+                <div class="dropdown">
                     <button id="profile-btn">Profile</button>
-                    <button id="switch-account-btn">Switch Account</button>
                     <button id="logout-btn">Logout</button>
+                    <button id="switch-account-btn">Switch Account</button>
                 </div>
             </div>
         </header>
 
-        <div class="notes-container" id="notes-container"></div>
-
+        <div id="notes-container"></div>
         <button id="add-note-btn">+</button>
     </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
