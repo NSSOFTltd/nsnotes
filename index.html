@@ -69,12 +69,18 @@
             background: none;
             border: none;
             color: white;
+            padding: 5px;
+        }
+
+        .menu-container {
+            position: relative;
         }
 
         .menu-options {
             display: none;
             position: absolute;
-            right: 10px;
+            top: 30px;
+            right: 0;
             background: #2a2a2a;
             padding: 10px;
             border-radius: 8px;
@@ -143,11 +149,13 @@
         <div class="navbar">
             <h1>NS NOTES</h1>
             <input type="text" id="search" placeholder="Search notes by title..." style="padding: 10px; background: #2a2a2a; color: white; border: none; border-radius: 8px; outline: none;">
-            <button class="menu-btn" onclick="toggleMenu()">⋮</button>
-            <div class="menu-options" id="menu-options">
-                <button onclick="openProfile()">Profile</button>
-                <button onclick="switchAccount()">Switch Account</button>
-                <button onclick="logout()">Logout</button>
+            <div class="menu-container">
+                <button class="menu-btn" onclick="toggleMenu()">⋮</button>
+                <div class="menu-options" id="menu-options">
+                    <button onclick="openProfile()">Profile</button>
+                    <button onclick="switchAccount()">Switch Account</button>
+                    <button onclick="logout()">Logout</button>
+                </div>
             </div>
         </div>
 
