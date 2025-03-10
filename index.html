@@ -3,237 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS NOTES - Login</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>Qwen Chat Interface - Optimized</title>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background: #121212;
-            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Align to bottom */
             height: 100vh;
+            overflow: hidden;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 600px;
+            height: calc(100% - 20px); /* Leave 10% space at top and bottom */
+            margin-bottom: 10px;
+            background-color: #121212;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
-        }
-
-        .login-container {
-            background: #1e1e1e;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .google-login-btn {
-            margin-top: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
-
-        #home-page {
-            display: none;
-            width: 100%;
-            max-width: 800px;
-            margin: auto;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background-color: #1e1e1e;
+            overflow: hidden;
             position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10;
+            bottom: 10px;
         }
-
-        .menu-btn {
-            cursor: pointer;
+        .chat-header {
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
             font-size: 20px;
-            background: none;
-            border: none;
-            color: white;
-            padding: 5px;
+            font-weight: bold;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
         }
-
-        .menu-container {
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #121212;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            max-width: 85%;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .message.user {
+            background-color: #3a3a3a;
+            align-self: flex-end;
             position: relative;
         }
-
-        .menu-options {
-            display: none;
-            position: absolute;
-            top: 30px;
-            right: 0;
-            background: #2a2a2a;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        .message.bot {
+            background-color: #424242;
+            align-self: flex-start;
+            position: relative;
         }
-
-        .menu-options button {
-            display: block;
-            width: 100%;
-            background: none;
+        .message.user::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-left-color: #3a3a3a;
+        }
+        .message.bot::after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-right-color: #424242;
+        }
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #333;
+            background-color: #1e1e1e;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 25px; /* Rounded corners for the typing box */
+            outline: none;
+            font-size: 14px;
+            background-color: #212121;
+            color: #fff;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background-color: #4caf50;
+            color: #fff;
             border: none;
-            color: white;
-            padding: 10px;
-            text-align: left;
+            border-radius: 25px; /* Rounded corners for the send button */
             cursor: pointer;
+            font-size: 14px;
         }
-
-        .menu-options button:hover {
-            background: #444;
+        .chat-input button:hover {
+            background-color: #43a047;
         }
-
-        .profile-popup {
+        .loading-indicator {
             display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-            text-align: center;
-            width: 90%;
-            max-width: 350px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #888;
         }
-
-        .profile-popup h2 {
-            font-size: 22px;
-            margin-bottom: 10px;
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .profile-popup p {
-            font-size: 16px;
-            margin-bottom: 10px;
+        ::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
         }
-
-        .close-popup {
-            cursor: pointer;
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            font-size: 18px;
+        ::-webkit-scrollbar-track {
+            background-color: #121212;
         }
-
     </style>
 </head>
 <body>
-
-    <div id="login-page" class="login-container">
-        <h1>Welcome to NS NOTES</h1>
-        <p>Login to continue</p>
-        <div id="google-login" class="google-login-btn"></div>
-    </div>
-
-    <div id="home-page">
-        <div class="navbar">
-            <h1>NS NOTES</h1>
-            <input type="text" id="search" placeholder="Search notes by title..." style="padding: 10px; background: #2a2a2a; color: white; border: none; border-radius: 8px; outline: none;">
-            <div class="menu-container">
-                <button class="menu-btn" onclick="toggleMenu()">⋮</button>
-                <div class="menu-options" id="menu-options">
-                    <button onclick="openProfile()">Profile</button>
-                    <button onclick="switchAccount()">Switch Account</button>
-                    <button onclick="logout()">Logout</button>
-                </div>
-            </div>
+    <div class="chat-container">
+        <div class="chat-header">Qwen Chat</div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
         </div>
-
-        <div class="profile-popup" id="profile-popup">
-            <span class="close-popup" onclick="closeProfile()">✖</span>
-            <h2 id="profile-name"></h2>
-            <p id="profile-email"></p>
-            <p>Software Version: 1.0.0</p>
-        </div>
+        <div class="loading-indicator" id="loadingIndicator">Waiting for response...</div>
     </div>
 
     <script>
-        function handleCredentialResponse(response) {
-            try {
-                const responsePayload = JSON.parse(atob(response.credential.split('.')[1]));
-                localStorage.setItem("user", JSON.stringify(responsePayload));
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const loadingIndicator = document.getElementById('loadingIndicator');
 
-                document.getElementById("login-page").style.display = "none";
-                document.getElementById("home-page").style.display = "block";
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (!userMessage) return;
 
-                document.getElementById("profile-name").innerText = responsePayload.name;
-                document.getElementById("profile-email").innerText = responsePayload.email;
-            } catch (error) {
-                console.error("Login Error:", error);
-                alert("Login failed! Please try again.");
-            }
-        }
+            // Display user's message
+            appendMessage(userMessage, 'user');
+            userInput.value = '';
 
-        function renderGoogleLoginButton() {
-            google.accounts.id.initialize({
-                client_id: "1096498113269-aa66pncvqn6jf7jkb8r0mh7di47dv3m4.apps.googleusercontent.com",
-                callback: handleCredentialResponse
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+
+            // Send the message to the AI agent and get a response
+            fetchAIResponse(userMessage).then(response => {
+                appendMessage(response, 'bot');
+            }).catch(error => {
+                console.error('Error:', error);
+                appendMessage('There was an error processing your request.', 'bot');
+            }).finally(() => {
+                loadingIndicator.style.display = 'none';
             });
-
-            google.accounts.id.renderButton(
-                document.getElementById("google-login"),
-                { theme: "outline", size: "large" }
-            );
         }
 
-        function toggleMenu() {
-            const menu = document.getElementById("menu-options");
-            menu.style.display = menu.style.display === "block" ? "none" : "block";
+        function appendMessage(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', sender);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
         }
 
-        function openProfile() {
-            document.getElementById("profile-popup").style.display = "block";
-        }
+        async function fetchAIResponse(userMessage) {
+            const apiUrl = 'https://api.langflow.astra.datastax.com/lf/dfe4ba5d-2cd2-4477-827d-1ac83f7674e6/api/v1/run/376a4262-66cb-471f-9fa0-454fc1091a4a?stream=false';
 
-        function closeProfile() {
-            document.getElementById("profile-popup").style.display = "none";
-        }
+            try {
+                console.log('Sending request to:', apiUrl);
+                console.log('Request payload:', {
+                    input_value: userMessage,
+                    output_type: "chat",
+                    input_type: "chat",
+                    tweaks: {
+                        "ChatInput-q7Cqf": {},
+                        "ChatOutput-ULYAT": {},
+                        "URL-gFYta": {},
+                        "OpenRouterComponent-XdI4R": {},
+                        "Agent-kvN5i": {}
+                    }
+                });
 
-        function switchAccount() {
-            google.accounts.id.disableAutoSelect();
-            localStorage.removeItem("user");
-            window.location.reload();
-        }
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer AstraCS:XAmpStXRrQHZHbuQRgXyOnoq:2441b801524af50be00310cc3763bb83df8e1cbe314fd1464b2245c5d6c9fb73'
+                    },
+                    body: JSON.stringify({
+                        input_value: userMessage,
+                        output_type: "chat",
+                        input_type: "chat",
+                        tweaks: {
+                            "ChatInput-q7Cqf": {},
+                            "ChatOutput-ULYAT": {},
+                            "URL-gFYta": {},
+                            "OpenRouterComponent-XdI4R": {},
+                            "Agent-kvN5i": {}
+                        }
+                    })
+                });
 
-        function logout() {
-            localStorage.removeItem("user");
-            window.location.reload();
-        }
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    const errorText = await response.text(); // Get detailed error message
+                    console.error('Error response:', errorText);
+                    throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
+                }
 
-        window.onload = function () {
-            const user = localStorage.getItem("user");
-            if (user) {
-                document.getElementById("login-page").style.display = "none";
-                document.getElementById("home-page").style.display = "block";
+                const data = await response.json();
+                console.log('Response data:', data);
 
-                const userData = JSON.parse(user);
-                document.getElementById("profile-name").innerText = userData.name;
-                document.getElementById("profile-email").innerText = userData.email;
-            } else {
-                renderGoogleLoginButton();
+                // Extract the AI agent's response from the correct location
+                const aiMessage = data.outputs[0].outputs[0].results.message.text;
+                return aiMessage || 'Sorry, I could not understand that.';
+            } catch (error) {
+                console.error('Fetch error:', error.message);
+                throw error; // Re-throw to handle in the calling function
             }
-        };
-    </script>
+        }
 
+        // Optional: Handle Enter key press for sending messages
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
 </body>
 </html>
